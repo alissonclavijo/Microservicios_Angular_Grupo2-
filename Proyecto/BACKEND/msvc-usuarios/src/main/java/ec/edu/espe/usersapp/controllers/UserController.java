@@ -3,6 +3,7 @@ package ec.edu.espe.usersapp.controllers;
 import ec.edu.espe.usersapp.entity.User;
 import ec.edu.espe.usersapp.services.UserService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +48,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<?> save(@Valid @RequestBody User user){
-        User newUser = userService.save(user);
-        return ResponseEntity.ok().body(newUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(user));
     }
 
     @PutMapping("/{id}")
