@@ -15,7 +15,10 @@
                     <td>{{ row.course.id }}</td>
                     <td>{{ row.course.name }}</td>
                     <td>
-                        <ul>
+                        <select>
+                            <option *ngFor="let courseUser of row.course.courseUsers" [value]="courseUser.userId">{{ courseUser.userId }}</option>
+                        </select>
+                        <!-- <ul>
                             <li>
                                 <ul>
                                     @for (courseUser of row.course.courseUsers; track courseUser) {
@@ -23,7 +26,7 @@
                                     }
                                 </ul>
                             </li>
-                        </ul>
+                        </ul> -->
                     </td>
                     <td>
                         <div class="btn-group">
@@ -51,18 +54,15 @@
                         <input type="text" class="form-control" [(ngModel)]="courseForm.name" name="name" placeholder="Nombre del curso" required>
                     </div>
                     <div class="mb-3">
-                        <label for="email" class="form-label">Usuarios del Curso</label>
-                        <ul>
-                                <li>
-                                    <ul>
-                                        @for (courseUser of courseForm.courseUsers; track courseUser) {
-                                            <li>{{ courseUser.userId }}</li>
-                                        }
-                                    </ul>
-                                </li>
-                        </ul>
-                        <input type="email" class="form-control" [(ngModel)]="courseForm.courseUsers" name="email" placeholder="Usuarios" required>
-
+                        @for (user of userRows; track user) {
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="{{ user.id }}" [(ngModel)]="courseForm.users" name="users">
+                                <label class="form-check
+                                -label" for="user{{ user.id }}">
+                                    {{ user.name }}
+                                </label>
+                            </div>
+                        }
                     </div>
                     <button type="submit" class="btn btn-success" (click)="createCourse()">Guardar</button>
                 </form>

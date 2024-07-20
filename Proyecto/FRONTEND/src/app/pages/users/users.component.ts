@@ -33,7 +33,7 @@ export class UsersComponent implements OnInit {
         this.loadUsers();
 
         try {
-            this.userService.getUser().subscribe((users: User[]) => {
+            this.userService.getUsers().subscribe((users: User[]) => {
                 this.users = users;
             });
         } catch (error) {
@@ -82,7 +82,7 @@ export class UsersComponent implements OnInit {
 
     private async loadUsers() {
         try {
-            const users = await lastValueFrom(this.userService.getUser());
+            const users = await lastValueFrom(this.userService.getUsers());
             this.userRows = users.map((user: User) => ({ user }));
         } catch (error) {
             console.error('Ocurrió un error al obtener los usuarios');

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CourseService } from '../../services/course.service';
+import { UserService } from '../../services/user.service';
 import { FormsModule } from '@angular/forms';
 import { Course } from '../../models/course.model';
 import { User } from '../../models/user.model';
@@ -28,6 +29,7 @@ interface CourseForm {
 export class CoursesComponent implements OnInit{
 
     public courseRows: CourseTableItem[] = [];
+    public userRows: User[] = [];
     public showFormModal = false;
     public courses: Course[] = [];
     
@@ -37,12 +39,21 @@ export class CoursesComponent implements OnInit{
         courseUsers: [],
         users: []
     };
+
+    public userForm: User = {
+        id: 0,
+        name: '',
+        email: ''
+    };
     
 
-    constructor(private courseService: CourseService) { }
+    constructor(private courseService: CourseService,
+                private userService: UserService
+                ) { }
 
     ngOnInit(): void {
         this.loadCourses();
+        this.loadUsers();
 
         try {
             this.courseService.getCourse().subscribe((courses: Course[]) => {
@@ -101,6 +112,17 @@ export class CoursesComponent implements OnInit{
             this.courseRows = courses.map((course) => ({ course }));
         } catch (error) {
             console.error('Ocurrió un error al obtener los cursos');
+            console.error(error);
+        }
+    }
+
+    private async loadUsers() {
+        try {
+            const users = await lastValueFrom(this.userService.getUsers());
+            this.userRows = users;
+            console.log(users);
+        } catch (error) {
+            console.error('Ocurrió un error al obtener los usuarios');
             console.error(error);
         }
     }
