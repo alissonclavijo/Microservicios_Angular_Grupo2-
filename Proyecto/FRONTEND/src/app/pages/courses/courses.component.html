@@ -1,0 +1,72 @@
+<section class="container my-4">
+    <!-- Table of users -->
+    <table class="table table-bordered table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>usuarios del Curso</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (row of courseRows; track row) {
+                <tr>
+                    <td>{{ row.course.id }}</td>
+                    <td>{{ row.course.name }}</td>
+                    <td>
+                        <ul>
+                            <li>
+                                <ul>
+                                    @for (courseUser of row.course.courseUsers; track courseUser) {
+                                        <li>{{ courseUser.userId }}</li>
+                                    }
+                                </ul>
+                            </li>
+                        </ul>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-primary" (click)="openFormModal(row.course)">Editar</button> 
+                            <button class="btn btn-danger"(click)="deleteCourse(row.course.id)" >Eliminar</button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</section>
+
+<div [ngClass]="{ 'hidden': !showFormModal }"  class="container my-4">
+    <!-- Modal form -->
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="formModalLabel">Formulario de Cursos</h5>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Nombre del curso</label>
+                        <input type="text" class="form-control" [(ngModel)]="courseForm.name" name="name" placeholder="Nombre del curso" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Usuarios del Curso</label>
+                        <ul>
+                                <li>
+                                    <ul>
+                                        @for (courseUser of courseForm.courseUsers; track courseUser) {
+                                            <li>{{ courseUser.userId }}</li>
+                                        }
+                                    </ul>
+                                </li>
+                        </ul>
+                        <input type="email" class="form-control" [(ngModel)]="courseForm.courseUsers" name="email" placeholder="Usuarios" required>
+
+                    </div>
+                    <button type="submit" class="btn btn-success" (click)="createCourse()">Guardar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,9 +1,17 @@
 package com.example.msvc.cursos.models.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name="course_user")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class CourseUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -11,21 +19,5 @@ public class CourseUser {
 
     @Column(name = "id_course", unique = true)
     private Long userId;
-
-    public Long getIdCourse(){
-        return userId;
-    }
-
-    public void setIdCourse(Long idCourse){
-        this.userId = idCourse;
-    }
-
-    public Long getUserId(){
-        return userId;
-    }
-
-    public void setUserId(Long UserId){
-        this.userId = userId;
-    }
 
 }

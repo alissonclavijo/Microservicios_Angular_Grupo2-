@@ -3,12 +3,19 @@ package com.example.msvc.cursos.models.entity;
 import com.example.msvc.cursos.models.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name="courses")
+@Data
+@AllArgsConstructor
+@Builder
 public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,29 +36,10 @@ public class Course {
         users = new ArrayList<>();
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String nombre) {
-        this.name = name;
-    }
-
     public List<CourseUser> getCourseUsers() {
         return courseUsers;
     }
 
-    public void setCourseUsers(List<CourseUser> cursoUsuarios) {
-        this.courseUsers = courseUsers;
-    }
 
     public void addCourseUser(CourseUser courseUsers) {
         this.courseUsers.add(courseUsers);
