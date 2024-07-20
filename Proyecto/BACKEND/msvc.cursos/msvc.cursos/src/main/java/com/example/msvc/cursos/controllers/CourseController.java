@@ -62,14 +62,14 @@ public class CourseController {
         }
     }
 
-    @PutMapping("/{id}/asignar-user/{idCurso}")
-    public ResponseEntity<?> asignUser(@RequestBody User user, @PathVariable Long id){
+    @PutMapping("/{id}/assign-user/{userId}")
+    public ResponseEntity<?> assignUser(@PathVariable Long id, @PathVariable Long userId) {
         Optional<User> o;
         try {
-            o = courseService.addUser(user, id);
+            o = courseService.addUser(new User(userId), id);
         } catch (FeignException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Collections.singletonMap("mensaje", "Error al agregar user" + e.getLocalizedMessage()));
+                    .body(Collections.singletonMap("message", "Error assigning user: " + e.getLocalizedMessage()));
         }
 
         if (o.isPresent()) {
@@ -78,5 +78,20 @@ public class CourseController {
         return ResponseEntity.notFound().build();
     }
 
+    @PutMapping("/{id}/unassign-user/{userId}")
+    public ResponseEntity<?> unassignUser(@PathVariable Long id, @PathVariable Long userId) {
+        Optional<User> o;
+        try {
+            o = courseService.deleteUser(userId, id);
+        } catch (FeignException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.singletonMap("message", "Error unassigning user: " + e.getLocalizedMessage()));
+        }
+
+        if (o.isPresent()) {
+            return ResponseEntity.ok(o.get());
+        }
+        return ResponseEntity.notFound().build();
+    }
 
 }

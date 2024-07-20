@@ -9,4 +9,8 @@ export const routes: Routes = [
         path: 'courses',
         loadChildren: async () => (await import('./pages/courses/course.routes')).routes,
     },
+    {
+        path: 'enrollment',
+        loadChildren: async () => (await import('./pages/enrollment/enrollment.route')).routes,
+    }
 ];

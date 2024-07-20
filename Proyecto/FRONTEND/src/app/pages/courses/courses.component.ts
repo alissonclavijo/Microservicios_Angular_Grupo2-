@@ -58,7 +58,7 @@ export class CoursesComponent implements OnInit{
         try {
             this.courseService.getCourse().subscribe((courses: Course[]) => {
                 this.courses = courses;
-                console.log(this.courses);
+               // console.log(this.courses);
             });
         } catch (error) {
             console.error('Ocurrió un error al obtener los cursos');
@@ -85,7 +85,7 @@ export class CoursesComponent implements OnInit{
             const course = await lastValueFrom(
                 this.courseService.updateCourse(this.courseForm)
             );
-            console.log(course);
+            //console.log(course);
             await this.loadCourses();
         } catch (error) {
             console.error('Ocurrió un error al actualizar el curso');

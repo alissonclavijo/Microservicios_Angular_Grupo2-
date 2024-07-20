@@ -15,14 +15,18 @@ export class SidebarComponent implements OnInit {
         {
             title: 'Usuarios',
             icon: 'users',
-            link: ['/users'],
-            active: false,
+            link: ['/users'],   
         },
         {
             title: 'Cursos',
             icon: 'book',
             link: ['/courses'],
-        }
+        },
+        {
+            title: 'Matrícula',
+            icon: 'user-plus',
+            link: ['/enrollment'],
+        },
     ];
 
     private router: Router;

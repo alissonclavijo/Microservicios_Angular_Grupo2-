@@ -19,4 +19,8 @@ public class User {
 
     private String password;
 
+    public User(Long id) {
+        this.id = id;
+    }
 }
+

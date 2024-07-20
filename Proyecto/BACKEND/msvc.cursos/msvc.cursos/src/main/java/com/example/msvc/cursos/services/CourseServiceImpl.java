@@ -19,7 +19,7 @@ public class CourseServiceImpl implements CourseService {
     private CourseRepository courseRepository;
 
     @Autowired
-    UserClientRest userClientRest;
+    private UserClientRest userClientRest;
 
     @Override
     @Transactional(readOnly = true)
@@ -40,57 +40,83 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public void delete(Long id){
         courseRepository.deleteById(id);
     }
 
     @Override
-    public Optional<User> addUser(User user, Long courseId){
+    public Optional<User> addUser(User user, Long courseId) {
         Optional<Course> o = courseRepository.findById(courseId);
-        if(o.isPresent())
-        {
+        if(o.isPresent()) {
+            Course course = o.get();
+
+            if(course.getCourseUsers().size() >= 25) {
+                throw new RuntimeException("The course has reached the maximum number of students.");
+            }
+
+            boolean userExists = course.getCourseUsers().stream()
+                    .anyMatch(cu -> cu.getUserId().equals(user.getId()));
+            if(userExists) {
+                throw new RuntimeException("The user is already enrolled in this course.");
+            }
+
             User userMicro = userClientRest.detail(user.getId());
 
-            Course course = o.get();
             CourseUser courseUser = new CourseUser();
             courseUser.setUserId(user.getId());
 
             course.addCourseUser(courseUser);
             courseRepository.save(course);
+
+            return Optional.of(userMicro);
         }
         return Optional.empty();
     }
 
     @Override
-    public Optional<User> createUser(User user, Long courseId){
+    public Optional<User> createUser(User user, Long courseId) {
         Optional<Course> o = courseRepository.findById(courseId);
-        if(o.isPresent())
-        {
+        if(o.isPresent()) {
+            Course course = o.get();
+
+            if(course.getCourseUsers().size() >= 25) {
+                throw new RuntimeException("The course has reached the maximum number of students.");
+            }
+
+            boolean userExists = course.getCourseUsers().stream()
+                    .anyMatch(cu -> cu.getUserId().equals(user.getId()));
+            if(userExists) {
+                throw new RuntimeException("The user is already enrolled in this course.");
+            }
+
             User userMicro = userClientRest.create(user);
 
-            Course course = o.get();
             CourseUser courseUser = new CourseUser();
             courseUser.setUserId(userMicro.getId());
 
             course.addCourseUser(courseUser);
             courseRepository.save(course);
+
+            return Optional.of(userMicro);
         }
         return Optional.empty();
     }
 
     @Override
-    public Optional<User> deleteUser(Long id, Long cursoId){
-        Optional<Course> o = courseRepository.findById(cursoId);
-        if(o.isPresent())
-        {
+    public Optional<User> deleteUser(Long id, Long courseId) {
+        Optional<Course> o = courseRepository.findById(courseId);
+        if(o.isPresent()) {
+            Course course = o.get();
+
             User userMicro = userClientRest.detail(id);
 
-            Course course = o.get();
             course.getCourseUsers().removeIf(cu -> cu.getUserId().equals(id));
             courseRepository.save(course);
+
+            return Optional.of(userMicro);
         }
         return Optional.empty();
     }
-
 }
+
