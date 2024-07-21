@@ -19,7 +19,7 @@ export class EnrollmentService {
 	}
 
 	getUsers(): Observable<User[]> {
-		return this.http.get<User[]>(`http://localhost:8001/users`);
+		return this.http.get<User[]>(`${environment.apiUrlUsers}/users`);
 	}
 
 	enroll(userId: number, courseId: number): Observable<any> {

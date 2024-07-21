@@ -65,6 +65,7 @@ public class CourseServiceImpl implements CourseService {
 
             CourseUser courseUser = new CourseUser();
             courseUser.setUserId(user.getId());
+            courseUser.setCourseId(courseId);
 
             course.addCourseUser(courseUser);
             courseRepository.save(course);
@@ -94,6 +95,7 @@ public class CourseServiceImpl implements CourseService {
 
             CourseUser courseUser = new CourseUser();
             courseUser.setUserId(userMicro.getId());
+            courseUser.setCourseId(courseId);
 
             course.addCourseUser(courseUser);
             courseRepository.save(course);
@@ -102,6 +104,7 @@ public class CourseServiceImpl implements CourseService {
         }
         return Optional.empty();
     }
+
 
     @Override
     public Optional<User> deleteUser(Long id, Long courseId) {

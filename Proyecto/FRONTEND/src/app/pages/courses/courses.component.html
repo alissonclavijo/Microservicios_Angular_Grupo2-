@@ -10,28 +10,19 @@
             </tr>
         </thead>
         <tbody>
-            @for (row of courseRows; track row) {
+            @for (course of courseRows; track course) {
                 <tr>
-                    <td>{{ row.course.id }}</td>
-                    <td>{{ row.course.name }}</td>
+                    <td>{{ course.id }}</td>
+                    <td>{{ course.name }}</td>
                     <td>
                         <select>
-                            <option *ngFor="let courseUser of row.course.courseUsers" [value]="courseUser.userId">{{ courseUser.userId }}</option>
+                            <option *ngFor="let courseUser of course.courseUsers" [value]="courseUser.userId">{{ courseUser.userId }}</option>
                         </select>
-                        <!-- <ul>
-                            <li>
-                                <ul>
-                                    @for (courseUser of row.course.courseUsers; track courseUser) {
-                                        <li>{{ courseUser.userId }}</li>
-                                    }
-                                </ul>
-                            </li>
-                        </ul> -->
                     </td>
                     <td>
                         <div class="btn-group">
-                            <button class="btn btn-primary" (click)="openFormModal(row.course)">Editar</button> 
-                            <button class="btn btn-danger"(click)="deleteCourse(row.course.id)" >Eliminar</button>
+                            <button class="btn btn-primary" (click)="openFormModal(course)">Editar</button> 
+                            <button class="btn btn-danger"(click)="deleteCourse(course.id)" >Eliminar</button>
                         </div>
                     </td>
                 </tr>
@@ -54,19 +45,26 @@
                         <input type="text" class="form-control" [(ngModel)]="courseForm.name" name="name" placeholder="Nombre del curso" required>
                     </div>
                     <div class="mb-3">
+                        <h4>Usuarios Asignados</h4>
                         @for (user of userRows; track user) {
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="{{ user.id }}" [(ngModel)]="courseForm.users" name="users">
-                                <label class="form-check
-                                -label" for="user{{ user.id }}">
+                                <input 
+                                    class="form-check-input" 
+                                    type="checkbox" 
+                                    value="{{ user.id }}" 
+                                    [(ngModel)]="courseForm.selectedUsers[$index].selected"
+                                    name="users[{{$index}}]">
+                                <label class="form-check-label" for="user{{ user.id }}">
                                     {{ user.name }}
                                 </label>
                             </div>
                         }
                     </div>
-                    <button type="submit" class="btn btn-success" (click)="createCourse()">Guardar</button>
+                    <button type="submit" class="btn btn-success" (click)="updateCourse()">Guardar</button>
+                    <button type="button" class="btn btn-secondary" (click)="createCourse()">Nuevo</button>
                 </form>
             </div>
         </div>
     </div>
+    <div *ngIf="message" class="alert alert-info mt-3">{{ message }}</div>
 </div>

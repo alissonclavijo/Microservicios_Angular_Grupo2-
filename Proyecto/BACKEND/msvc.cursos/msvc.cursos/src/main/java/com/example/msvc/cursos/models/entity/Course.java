@@ -24,7 +24,7 @@ public class Course {
     @NotBlank
     private String name;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id")
     private List<CourseUser> courseUsers;
 
@@ -40,9 +40,7 @@ public class Course {
         return courseUsers;
     }
 
-
     public void addCourseUser(CourseUser courseUsers) {
         this.courseUsers.add(courseUsers);
     }
-
 }

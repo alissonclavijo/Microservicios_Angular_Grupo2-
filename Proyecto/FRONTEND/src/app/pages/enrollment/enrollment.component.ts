@@ -6,19 +6,6 @@ import { EnrollmentService } from '../../services/enrollment.service';
 import { User } from '../../models/user.model';
 import { Course } from '../../models/course.model';
 
-interface EnrollmentForm {
-	id: number;
-	name: string;
-	courseUsers: CourseUser[];
-	users: User[];
-}
-
-interface CourseUser {
-	id: number;
-	name: string;
-	email: string;
-}
-
 @Component({
 	selector: 'app-enrollment',
 	standalone: true,
@@ -90,4 +77,3 @@ export class EnrollmentComponent implements OnInit {
 		}
 	}
 }
-

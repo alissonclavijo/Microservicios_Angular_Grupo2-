@@ -8,15 +8,15 @@ import { CourseUser } from '../../models/courseUser.model';
 import { lastValueFrom } from 'rxjs';
 import { CommonModule } from '@angular/common';
 
-interface CourseTableItem {
-    course: any;
-}
-
 interface CourseForm {
     id: number;
     name: string;
     courseUsers: CourseUser[];
-    users: User[];
+    users: User[],
+    selectedUsers: {
+        user: User,
+        selected: boolean
+    }[]
 }
 
 @Component({
@@ -28,16 +28,18 @@ interface CourseForm {
 })
 export class CoursesComponent implements OnInit{
 
-    public courseRows: CourseTableItem[] = [];
+    public courseRows: Course[] = [];
     public userRows: User[] = [];
     public showFormModal = false;
     public courses: Course[] = [];
+    message: string | null = null;
     
     public courseForm: CourseForm = {
         id: 0,
         name: '',
         courseUsers: [],
-        users: []
+        users: [],
+        selectedUsers: []
     };
 
     public userForm: User = {
@@ -46,10 +48,8 @@ export class CoursesComponent implements OnInit{
         email: ''
     };
     
-
     constructor(private courseService: CourseService,
-                private userService: UserService
-                ) { }
+                private userService: UserService) { }
 
     ngOnInit(): void {
         this.loadCourses();
@@ -58,9 +58,9 @@ export class CoursesComponent implements OnInit{
         try {
             this.courseService.getCourse().subscribe((courses: Course[]) => {
                 this.courses = courses;
-               // console.log(this.courses);
             });
         } catch (error) {
+            this.handleError(error);
             console.error('Ocurrió un error al obtener los cursos');
             console.error(error);
         }
@@ -71,10 +71,9 @@ export class CoursesComponent implements OnInit{
             const course = await lastValueFrom(
                 this.courseService.createCourse(this.courseForm)
             );
-            console.log(course);
-            this.courseRows.push({ course });
             await this.loadCourses();
         } catch (error) {
+            this.handleError(error);
             console.error('Ocurrió un error al crear el curso');
             console.error(error);
         }
@@ -83,11 +82,20 @@ export class CoursesComponent implements OnInit{
     public async updateCourse() {
         try {
             const course = await lastValueFrom(
-                this.courseService.updateCourse(this.courseForm)
+                this.courseService.updateCourse({
+                    id: this.courseForm.id,
+                    name: this.courseForm.name,
+                    courseUsers: this.courseForm.selectedUsers.filter(x => x.selected).map(x => ({
+                        id: 0,
+                        userId: x.user.id!
+                    })),
+                    users: this.courseForm.selectedUsers.map(x => x.user)
+                })
             );
             //console.log(course);
             await this.loadCourses();
         } catch (error) {
+            this.handleError(error);
             console.error('Ocurrió un error al actualizar el curso');
             console.error(error);
         }
@@ -98,9 +106,9 @@ export class CoursesComponent implements OnInit{
             await lastValueFrom(
                 this.courseService.deleteCourse(id)
             );
-            this.courseRows = this.courseRows.filter((row) => row.course.id !== id);
             await this.loadCourses();
         } catch (error) {
+            this.handleError(error);
             console.error('Ocurrió un error al eliminar el curso');
             console.error(error);
         }
@@ -108,9 +116,9 @@ export class CoursesComponent implements OnInit{
 
     private async loadCourses() {
         try {
-            const courses = await lastValueFrom(this.courseService.getCourse());
-            this.courseRows = courses.map((course) => ({ course }));
+            this.courseRows = await lastValueFrom(this.courseService.getCourse());
         } catch (error) {
+            this.handleError(error);
             console.error('Ocurrió un error al obtener los cursos');
             console.error(error);
         }
@@ -120,8 +128,16 @@ export class CoursesComponent implements OnInit{
         try {
             const users = await lastValueFrom(this.userService.getUsers());
             this.userRows = users;
-            console.log(users);
+            this.courseForm.users = [];
+            
+            for (const user of this.userRows) {
+                this.courseForm.selectedUsers.push({
+                    user,
+                    selected: false
+                });
+            }
         } catch (error) {
+            this.handleError(error);
             console.error('Ocurrió un error al obtener los usuarios');
             console.error(error);
         }
@@ -133,9 +149,24 @@ export class CoursesComponent implements OnInit{
                 id: course.id ?? 0,
                 name: course.name ?? '',
                 courseUsers: course.courseUsers ?? [],
-                users: course.users ?? []
+                users: course.users ?? [],
+                selectedUsers: this.courseForm.selectedUsers
             };
         }
      }
+
+     private handleError(error: any): void {
+		switch (error.status) {
+			case 404:
+				this.message = 'User or course not found.';
+				break;
+			case 400:
+				this.message = 'Error: ' + error.error.message;
+				break;
+			default:
+				this.message = 'An unexpected error occurred.';
+				console.error('Error enrolling user:', error);
+		}
+	}
 
 }

@@ -27,6 +27,8 @@ export class UsersComponent implements OnInit {
         password: '',
     };
 
+    message: string | null = null;
+
     constructor(private userService: UserService) { }
 
     ngOnInit(): void {
@@ -37,6 +39,7 @@ export class UsersComponent implements OnInit {
                 this.users = users;
             });
         } catch (error) {
+			this.handleError(error);
             console.error('Ocurrió un error al obtener los usuarios');
             console.error(error);
         }
@@ -50,6 +53,7 @@ export class UsersComponent implements OnInit {
             this.userRows.push({ user });
             await this.loadUsers();
         } catch (error) {
+			this.handleError(error);
             console.error('Ocurrió un error al crear el usuario');
             console.error(error);
         }
@@ -64,6 +68,7 @@ export class UsersComponent implements OnInit {
             this.userRows[index] = { user };
             await this.loadUsers();
         } catch (error) {
+			this.handleError(error);
             console.error('Ocurrió un error al actualizar el usuario');
             console.error(error);
         }
@@ -75,6 +80,7 @@ export class UsersComponent implements OnInit {
             this.userRows = this.userRows.filter((row) => row.user.id !== id);
             await this.loadUsers();
         } catch (error) {
+			this.handleError(error);
             console.error('Ocurrió un error al eliminar el usuario');
             console.error(error);
         }
@@ -85,6 +91,7 @@ export class UsersComponent implements OnInit {
             const users = await lastValueFrom(this.userService.getUsers());
             this.userRows = users.map((user: User) => ({ user }));
         } catch (error) {
+            this.handleError(error);
             console.error('Ocurrió un error al obtener los usuarios');
             console.error(error);
         }
@@ -106,7 +113,20 @@ export class UsersComponent implements OnInit {
                 password: '',
             };
         }
-
         this.showFormModal = true;
     }
+
+    private handleError(error: any): void {
+		switch (error.status) {
+			case 404:
+				this.message = 'User or course not found.';
+				break;
+			case 400:
+				this.message = 'Error: ' + error.error.message;
+				break;
+			default:
+				this.message = 'An unexpected error occurred.';
+				console.error('Error enrolling user:', error);
+		}
+	}
 }
