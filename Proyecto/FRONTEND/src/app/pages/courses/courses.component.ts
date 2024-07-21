@@ -33,6 +33,7 @@ export class CoursesComponent implements OnInit{
     public showFormModal = false;
     public courses: Course[] = [];
     message: string | null = null;
+    public selectedCourseUsers: User[] = [];
     
     public courseForm: CourseForm = {
         id: 0,
@@ -143,17 +144,22 @@ export class CoursesComponent implements OnInit{
         }
     }
 
-    public openFormModal(course: Course) {
+    public openFormModal(course: Course): void {
         if (course) {
-            this.courseForm = {
-                id: course.id ?? 0,
-                name: course.name ?? '',
-                courseUsers: course.courseUsers ?? [],
-                users: course.users ?? [],
-                selectedUsers: this.courseForm.selectedUsers
-            };
+          this.courseForm = {
+            id: course.id ?? 0,
+            name: course.name ?? '',
+            courseUsers: course.courseUsers ?? [],
+            users: this.userRows ?? [],
+            selectedUsers: this.courseForm.selectedUsers.map(x => ({ ...x, selected: false }))
+          };
+      
+          this.courseForm.selectedUsers = this.courseForm.selectedUsers.map(user => {
+            const foundUser = this.courseForm.courseUsers.find(u => u.userId === user.user.id);
+            return { user: foundUser ?? user.user, selected: foundUser ? true : false };
+          });
         }
-     }
+      }
 
      private handleError(error: any): void {
 		switch (error.status) {
