@@ -20,6 +20,7 @@ public class CourseUser {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "course_id")
-    private Long courseId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id")
+    private Course course;
 }

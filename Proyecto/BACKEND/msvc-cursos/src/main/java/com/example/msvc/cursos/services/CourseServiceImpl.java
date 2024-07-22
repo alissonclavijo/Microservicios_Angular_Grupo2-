@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class CourseServiceImpl implements CourseService {
@@ -46,31 +48,17 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    @Transactional
     public Optional<User> addUser(User user, Long courseId) {
-        Optional<Course> o = courseRepository.findById(courseId);
-        if(o.isPresent()) {
-            Course course = o.get();
-
-            if(course.getCourseUsers().size() >= 25) {
-                throw new RuntimeException("The course has reached the maximum number of students.");
-            }
-
-            boolean userExists = course.getCourseUsers().stream()
-                    .anyMatch(cu -> cu.getUserId().equals(user.getId()));
-            if(userExists) {
-                throw new RuntimeException("The user is already enrolled in this course.");
-            }
-
-            User userMicro = userClientRest.detail(user.getId());
-
+        Optional<Course> optionalCourse = courseRepository.findById(courseId);
+        if (optionalCourse.isPresent()) {
+            Course course = optionalCourse.get();
+            User userMsvc = userClientRest.detail(user.getId());
             CourseUser courseUser = new CourseUser();
-            courseUser.setUserId(user.getId());
-            courseUser.setCourseId(courseId);
-
+            courseUser.setUserId(userMsvc.getId());
             course.addCourseUser(courseUser);
             courseRepository.save(course);
-
-            return Optional.of(userMicro);
+            return Optional.of(userMsvc);
         }
         return Optional.empty();
     }
@@ -95,7 +83,6 @@ public class CourseServiceImpl implements CourseService {
 
             CourseUser courseUser = new CourseUser();
             courseUser.setUserId(userMicro.getId());
-            courseUser.setCourseId(courseId);
 
             course.addCourseUser(courseUser);
             courseRepository.save(course);
@@ -104,7 +91,6 @@ public class CourseServiceImpl implements CourseService {
         }
         return Optional.empty();
     }
-
 
     @Override
     public Optional<User> deleteUser(Long id, Long courseId) {

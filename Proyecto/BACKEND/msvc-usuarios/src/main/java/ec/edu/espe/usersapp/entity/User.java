@@ -24,7 +24,7 @@ public class User {
 
     @NotEmpty
     @Email
-    @Column(unique= true)
+    @Column(unique = true)
     private String email;
 
     @NotEmpty
