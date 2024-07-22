@@ -8,6 +8,7 @@ import feign.FeignException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,9 +37,10 @@ public class CourseController {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody Course course) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(courseService.save(course));
+    @PostMapping(consumes = "application/json", produces = "application/json")
+    public ResponseEntity<Course> createCourse(@RequestBody Course course) {
+        Course createdCourse = courseService.save(course);
+        return new ResponseEntity<>(createdCourse, HttpStatus.CREATED);
     }
 
     @PutMapping
@@ -92,6 +94,11 @@ public class CourseController {
             return ResponseEntity.ok(o.get());
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/user/{userId}")
+    public List<Course> getCoursesByUserId(@PathVariable Long userId) {
+        return courseService.findCoursesByUserId(userId);
     }
 
 }

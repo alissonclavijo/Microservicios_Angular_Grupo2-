@@ -1,5 +1,6 @@
 package ec.edu.espe.usersapp.services;
 
+import ec.edu.espe.usersapp.clients.CourseClientRest;
 import ec.edu.espe.usersapp.entity.User;
 import ec.edu.espe.usersapp.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,9 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     @Autowired
     private UsuarioRepository repository;
+
+    @Autowired
+    private CourseClientRest courseClient;
 
     @Override
     public List<User> getAll() {
@@ -32,6 +36,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(Long id) {
+        List<Object> courses = courseClient.getCoursesByUserId(id);
+        if (!courses.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario está matriculado en uno o más cursos y no puede ser eliminado.");
+        }
+
         if (repository.existsById(id)) {
             repository.deleteById(id);
         } else {

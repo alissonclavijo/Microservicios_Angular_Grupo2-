@@ -107,5 +107,11 @@ public class CourseServiceImpl implements CourseService {
         }
         return Optional.empty();
     }
+
+    @Override
+    public List<Course> findCoursesByUserId(Long userId) {
+        List<Course> courses = courseRepository.findCoursesByUserId(userId);
+        return courses.stream().distinct().collect(Collectors.toList());
+    }
 }
 

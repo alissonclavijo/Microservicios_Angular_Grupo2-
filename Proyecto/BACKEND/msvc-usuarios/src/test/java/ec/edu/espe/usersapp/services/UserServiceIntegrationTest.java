@@ -38,4 +38,44 @@ public class UserServiceIntegrationTest {
         assertThat(foundUser).isNotNull();
         assertThat(foundUser.getId()).isEqualTo(savedUser.getId());
     }
+
+    @Test
+    @Transactional
+    public void testSaveAndDeleteUser() {
+        User user = new User();
+        user.setName("John Doe");
+        user.setEmail("john.doe@example.com");
+        user.setPassword("password");
+
+        User savedUser = userService.save(user);
+        assertThat(savedUser).isNotNull();
+        userService.delete(savedUser.getId());
+
+        User foundUser = userService.getById(savedUser.getId()).orElse(null);
+        assertThat(foundUser).isNull();
+    }
+
+    @Test
+    @Transactional
+    public void testSaveAndUpdateUser() {
+        User user = new User();
+        user.setName("John Doe");
+        user.setEmail("john.doe@example.com");
+        user.setPassword("password");
+
+        User savedUser = userService.save(user);
+        assertThat(savedUser).isNotNull();
+
+        savedUser.setName("Jane Doe");
+        User updatedUser = userService.save(savedUser);
+        assertThat(updatedUser).isNotNull();
+        assertThat(updatedUser.getId()).isEqualTo(savedUser.getId());
+        assertThat(updatedUser.getName()).isEqualTo("Jane Doe");
+
+        User foundUser = userService.getById(updatedUser
+                .getId()).orElse(null);
+        assertThat(foundUser).isNotNull();
+        assertThat(foundUser.getId()).isEqualTo(updatedUser.getId());
+        assertThat(foundUser.getName()).isEqualTo("Jane Doe");
+    }
 }
